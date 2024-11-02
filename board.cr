@@ -1,6 +1,10 @@
 require "colorize"
 require "./piece"
 
+# TODO
+# - [ ] Out of board checks (can't run off the bounds of th eboard)
+# - [ ] Collision checks (can't hop enroute to destination except for knights)
+
 PieceCharacterSymbol = {
   Pawn:   "♟",
   Rook:   "♜",
@@ -61,27 +65,45 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
   end
 
   vertical_movement = from_rank_number != to_rank_number
-  if (vertical_movement)
-    vertical_direction = from_rank_number < to_file_number ? Direction::S : Direction::N
+  if vertical_movement
+    vertical_direction = from_rank_number < to_rank_number ? Direction::N : Direction::S
   end
 
-  if (horizontal_direction)
+  if horizontal_direction
     horizontal_direction = from_file_number < to_file_number ? Direction::E : Direction::W
   end
 
   horizontal_diff = (from_file_number - to_file_number).abs
   vertical_diff = (from_rank_number - to_rank_number).abs
+  is_diagonal_move = horizontal_direction && vertical_direction
+  is_knight_jump = (horizontal_diff == 2 && vertical_diff == 1) || (horizontal_diff == 1 && vertical_diff == 2)
 
-  if (horizontal_direction && vertical_direction)
-    # a proper diagonal in chess is 1:1 for horizontal to vertical squares
-    if (horizontal_diff != vertical_diff)
+  if is_knight_jump
+    knight_moves = 4
+    knight_movement = case {vertical_direction, vertical_diff, horizontal_direction, horizontal_diff}
+                      when {Direction::N, 2, Direction::E, 1}
+                        {Direction::NE, Jump::LONG}
+                      when {Direction::N, 1, Direction::E, 2}
+                        {Direction::NE, Jump::SHORT}
+                      when {Direction::S, 2, Direction::E, 1}
+                        {Direction::SE, Jump::LONG}
+                      when {Direction::S, 1, Direction::E, 2}
+                        {Direction::SE, Jump::SHORT}
+                      end
+
+    return knight_movement
+  end
+
+  if is_diagonal_move
+    if horizontal_diff == vertical_diff
+      # for non-knights, a valid diagonal in chess is 1:1 for horizontal to
+      #  vertical squares a diagonal move counts squares on the diagonal,
+      # instead of combining its separate horizontal and vertical counts,
+      # and because it's 1:1 horizontal to vertical the diagonal movement is same for either
+      count = horizontal_diff
+    else
       raise "Movement is not diagonal"
     end
-
-    # a diagonal move counts squares on the diagonal, instead of combining
-    # its separate horizontal and vertical counts, and because it's 1:1
-    # horizontal to vertical the diagonal movement is same for either
-    count = horizontal_diff
   else
     # either the horizontal_diff is 0 or the vertical_diff is 0
     # since the direction if not diagonal is one along one axis,

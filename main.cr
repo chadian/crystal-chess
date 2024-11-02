@@ -4,8 +4,7 @@ require "./piece"
 board = Board.new
 
 # Add white pieces
-aPawn = Pawn.new(PieceColor::White, board)
-board.add_piece(6, 0, aPawn)
+board.add_piece(6, 0, Pawn.new(PieceColor::White, board))
 board.add_piece(6, 1, Pawn.new(PieceColor::White, board))
 board.add_piece(6, 2, Pawn.new(PieceColor::White, board))
 board.add_piece(6, 3, Pawn.new(PieceColor::White, board))
@@ -27,4 +26,16 @@ board.add_piece(7, 7, Rook.new(PieceColor::White, board))
 puts board.draw
 
 board.move({'a', 2}, {'a', 4})
+puts board.draw
+
+board.move({'d', 2}, {'d', 3})
+puts board.draw
+
+board.move({'a', 4}, {'a', 5})
+puts board.draw
+
+board.move({'a', 5}, {'a', 6})
+puts board.draw
+
+board.move({'a', 1}, {'a', 5})
 puts board.draw

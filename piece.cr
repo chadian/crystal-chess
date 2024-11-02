@@ -1,3 +1,9 @@
+# TODO
+# - [ ]  Capture moves: in this case I think it's the same as regular moves except
+# for two cases for pawns:
+#   * normal diagonal capture
+#   * initial double piece move where it can capture a pawn on either side
+
 enum PieceColor
   White
   Black
@@ -29,7 +35,7 @@ enum Jump
   SHORT
 end
 
-MAX_MOVE_SQUARES = 7
+MAX_SQUARE_MOVES = 7
 
 alias PieceMovement = {Direction, Int32} | {Direction, Jump}
 
@@ -61,25 +67,61 @@ end
 
 class Pawn < Piece
   def moves : Array(PieceMovement)
-    if (@color == PieceColor::White)
-      [{Direction::N, 1}.as PieceMovement, {Direction::N, 2}.as PieceMovement]
-    else
-      [{Direction::S, 1}.as PieceMovement, {Direction::S, 2}.as PieceMovement]
-    end
+    direction = @color == PieceColor::White ? Direction::N : Direction::S
+    (1..2).to_a.map { |count| {direction, count}.as PieceMovement }
   end
 end
 
 class Rook < Piece
+  def moves : Array(PieceMovement)
+    (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::N, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::S, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::E, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::W, count}.as PieceMovement }
+  end
 end
 
 class Knight < Piece
+  def moves : Array(PieceMovement)
+    [Direction::N, Direction::E, Direction::S, Direction::W].flat_map do |direction|
+      [{direction, Jump::SHORT}.as PieceMovement, {direction, Jump::LONG}.as PieceMovement]
+    end
+  end
 end
 
 class Bishop < Piece
+  def moves : Array(PieceMovement)
+    (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NE, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SE, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SW, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NW, count}.as PieceMovement }
+  end
 end
 
 class Queen < Piece
+  def moves : Array(PieceMovement)
+    (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::N, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NE, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::E, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SE, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::S, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SW, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::W, count}.as PieceMovement } +
+      (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NW, count}.as PieceMovement }
+  end
 end
 
 class King < Piece
+  def moves : Array(PieceMovement)
+    [
+      {Direction::N, 1}.as PieceMovement,
+      {Direction::NE, 1}.as PieceMovement,
+      {Direction::E, 1}.as PieceMovement,
+      {Direction::SE, 1}.as PieceMovement,
+      {Direction::S, 1}.as PieceMovement,
+      {Direction::SW, 1}.as PieceMovement,
+      {Direction::W, 1}.as PieceMovement,
+      {Direction::NW, 1}.as PieceMovement,
+    ]
+  end
 end
