@@ -11,8 +11,9 @@ PieceCharacterSymbol = {
 }
 
 PieceCharacterLetter = {
-  Pawn:   "P",
-  Rook:   "R",
+  Pawn: "P",
+  Rook: "R",
+  # Fix this, Knight and King can't both be 'K'
   Knight: "K",
   Bishop: "B",
   Queen:  "Q",
