@@ -39,3 +39,12 @@ puts board.draw
 
 board.move({'a', 1}, {'a', 5})
 puts board.draw
+
+board.move({'b', 1}, {'a', 3})
+puts board.draw
+
+board.move({'a', 3}, {'c', 4})
+puts board.draw
+
+board.move({'c', 4}, {'e', 3})
+puts board.draw

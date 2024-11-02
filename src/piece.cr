@@ -83,7 +83,7 @@ end
 
 class Knight < Piece
   def moves : Array(PieceMovement)
-    [Direction::N, Direction::E, Direction::S, Direction::W].flat_map do |direction|
+    [Direction::NE, Direction::SE, Direction::SW, Direction::NW].flat_map do |direction|
       [{direction, Jump::SHORT}.as PieceMovement, {direction, Jump::LONG}.as PieceMovement]
     end
   end

@@ -25,7 +25,7 @@ PieceCharacterLetter = {
 }
 
 alias BoardCoordinate = {Char, Int32}
-alias StructureCoordinate = {Int32, Int32}
+alias ArrayMatrixCoordinate = {Int32, Int32}
 
 FileNumber = {
   a: 1,
@@ -38,15 +38,20 @@ FileNumber = {
   h: 8,
 }
 
-def convert_board_coordinate_to_structure(coordinate : BoardCoordinate) : StructureCoordinate
+def convert_board_coordinate_to_array_matrix_coordinate(coordinate : BoardCoordinate) : ArrayMatrixCoordinate
   file = coordinate[0]
-  rank = coordinate[1]
+  # Ranks are 1-indexed and start from the bottom left where the ArrayMatrix structure
+  # starts at the top left. So the 8th rank is is actually the 0th index and the 1st rank
+  # is the the 0th
+  rank = 8 - (coordinate[1])
+  file_number = FileNumber[file.downcase.to_s] - 1
 
-  file = file.downcase
+  array_matrix_range = 0..7
+  if (!(array_matrix_range.includes?(file_number)) || !(array_matrix_range.includes?(rank)))
+    raise "BoardCoordinate #{coordinate} is out of range of the ArrayMatrixCoordinate limits #{array_matrix_range}"
+  end
 
-  file_number = FileNumber[file.to_s] - 1
-
-  {8 - rank, file_number}
+  {rank, file_number}
 end
 
 def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovement
@@ -82,15 +87,26 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
     knight_moves = 4
     knight_movement = case {vertical_direction, vertical_diff, horizontal_direction, horizontal_diff}
                       when {Direction::N, 2, Direction::E, 1}
-                        {Direction::NE, Jump::LONG}
+                        {Direction::NE, Jump::LONG}.as PieceMovement
                       when {Direction::N, 1, Direction::E, 2}
-                        {Direction::NE, Jump::SHORT}
+                        {Direction::NE, Jump::SHORT}.as PieceMovement
+                      when {Direction::N, 2, Direction::W, 1}
+                        {Direction::NW, Jump::LONG}.as PieceMovement
+                      when {Direction::N, 1, Direction::W, 2}
+                        {Direction::NW, Jump::SHORT}.as PieceMovement
                       when {Direction::S, 2, Direction::E, 1}
-                        {Direction::SE, Jump::LONG}
+                        {Direction::SE, Jump::LONG}.as PieceMovement
                       when {Direction::S, 1, Direction::E, 2}
-                        {Direction::SE, Jump::SHORT}
+                        {Direction::SE, Jump::SHORT}.as PieceMovement
+                      when {Direction::S, 2, Direction::W, 1}
+                        {Direction::SW, Jump::LONG}.as PieceMovement
+                      when {Direction::S, 1, Direction::W, 2}
+                        {Direction::SW, Jump::SHORT}.as PieceMovement
                       end
 
+    if knight_movement.nil?
+      raise "Could not determine Knight's movement"
+    end
     return knight_movement
   end
 
@@ -102,7 +118,7 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
       # and because it's 1:1 horizontal to vertical the diagonal movement is same for either
       count = horizontal_diff
     else
-      raise "Movement is not diagonal"
+      raise "Illegal diagonal move"
     end
   else
     # either the horizontal_diff is 0 or the vertical_diff is 0
@@ -146,8 +162,8 @@ class Board
   end
 
   def move(from : BoardCoordinate, to : BoardCoordinate)
-    from_structure_coordinate = convert_board_coordinate_to_structure(from)
-    to_structure_coordinate = convert_board_coordinate_to_structure(to)
+    from_structure_coordinate = convert_board_coordinate_to_array_matrix_coordinate(from)
+    to_structure_coordinate = convert_board_coordinate_to_array_matrix_coordinate(to)
 
     piece = @structure[from_structure_coordinate[0]][from_structure_coordinate[1]]
 
@@ -156,9 +172,9 @@ class Board
     end
 
     movement = create_movement(from, to)
-    has_listed_move = piece.moves.includes?(movement)
+    is_valid_piece_move = piece.moves.includes?(movement)
 
-    if !has_listed_move
+    if !is_valid_piece_move
       raise "Movement #{from} -> #{to} is not a valid for piece #{piece.class.name}"
     end
 
