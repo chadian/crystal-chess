@@ -24,14 +24,14 @@ ForwardDirection = {
 # Describes the movement of Knights
 # LONG - The jump starts with two squares and then one over
 # SHORT - The jump starts with one forward and then two over
-enum JUMP
+enum Jump
   LONG
   SHORT
 end
 
 MAX_MOVE_SQUARES = 7
 
-alias PieceMovement = {Direction, Int32} | {Direction, Int32}
+alias PieceMovement = {Direction, Int32} | {Direction, Jump}
 
 abstract class Piece
   getter color : PieceColor
@@ -53,39 +53,33 @@ abstract class Piece
 
     return nil
   end
+
+  def moves : Array(PieceMovement)
+    [] of PieceMovement
+  end
 end
 
 class Pawn < Piece
   def moves : Array(PieceMovement)
     if (@color == PieceColor::White)
-      [{Direction::N, 1}]
+      [{Direction::N, 1}.as PieceMovement, {Direction::N, 2}.as PieceMovement]
     else
-      [{Direction::S, 1}]
+      [{Direction::S, 1}.as PieceMovement, {Direction::S, 2}.as PieceMovement]
     end
   end
 end
 
 class Rook < Piece
-  def moves
-  end
 end
 
 class Knight < Piece
-  def moves
-  end
 end
 
 class Bishop < Piece
-  def moves
-  end
 end
 
 class Queen < Piece
-  def moves
-  end
 end
 
 class King < Piece
-  def moves
-  end
 end
