@@ -2,7 +2,7 @@ require "colorize"
 require "./piece"
 
 # TODO
-# - [ ] Out of board checks (can't run off the bounds of th eboard)
+# - [ ] Out of board checks (can't run off the bounds of the board)
 # - [ ] Collision checks (can't hop enroute to destination except for knights)
 
 PieceCharacterSymbol = {
@@ -64,23 +64,18 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
   vertical_direction : Direction::N | Direction::S | Nil = nil
   count : Int32 | Jump
 
-  horizontal_movement = from_file_number != to_file_number
-  if (horizontal_movement)
+  horizontal_diff = (from_file_number - to_file_number).abs
+  vertical_diff = (from_rank_number - to_rank_number).abs
+
+  if horizontal_diff != 0
     horizontal_direction = from_file_number < to_file_number ? Direction::E : Direction::W
   end
 
-  vertical_movement = from_rank_number != to_rank_number
-  if vertical_movement
+  if vertical_diff != 0
     vertical_direction = from_rank_number < to_rank_number ? Direction::N : Direction::S
   end
 
-  if horizontal_direction
-    horizontal_direction = from_file_number < to_file_number ? Direction::E : Direction::W
-  end
-
-  horizontal_diff = (from_file_number - to_file_number).abs
-  vertical_diff = (from_rank_number - to_rank_number).abs
-  is_diagonal_move = horizontal_direction && vertical_direction
+  is_diagonal_move = !horizontal_direction.nil? && !vertical_direction.nil?
   is_knight_jump = (horizontal_diff == 2 && vertical_diff == 1) || (horizontal_diff == 1 && vertical_diff == 2)
 
   if is_knight_jump
@@ -107,6 +102,7 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
     if knight_movement.nil?
       raise "Could not determine Knight's movement"
     end
+
     return knight_movement
   end
 
@@ -175,7 +171,7 @@ class Board
     is_valid_piece_move = piece.moves.includes?(movement)
 
     if !is_valid_piece_move
-      raise "Movement #{from} -> #{to} is not a valid for piece #{piece.class.name}"
+      raise "Movement #{from} -> #{to} is not a valid movement for piece #{piece.class.name}"
     end
 
     # clear out existing location of piece
@@ -198,7 +194,8 @@ class Board
         square = @structure[row_index][column_index]
 
         if (column_index == 0)
-          print " #{8 - row_index} "
+          # output edge of board rank markers
+          print "#{8 - row_index} "
         end
 
         current_color = current_color == dark_tile ? light_tile : dark_tile
@@ -212,6 +209,8 @@ class Board
       end
       print "\n"
     end
-    print "    a  b  c  d  e  f  g  h"
+
+    # output edge of board file markers
+    print "   a  b  c  d  e  f  g  h"
   end
 end

@@ -22,11 +22,6 @@ enum Direction
   NW
 end
 
-ForwardDirection = {
-  PieceColor::White => Direction::N,
-  PieceColor::Black => Direction::S,
-}
-
 # Describes the movement of Knights
 # LONG - The jump starts with two squares and then one over
 # SHORT - The jump starts with one forward and then two over
