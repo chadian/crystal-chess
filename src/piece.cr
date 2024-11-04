@@ -1,12 +1,10 @@
-# TODO
-# - [ ]  Capture moves: in this case I think it's the same as regular moves except
-# for two cases for pawns:
-#   * normal diagonal capture
-#   * initial double piece move where it can capture a pawn on either side
-
 enum PieceColor
   White
   Black
+
+  def inverse
+    self == PieceColor::White ? PieceColor::Black : PieceColor::White
+  end
 end
 
 alias PieceCoordinate = {Int32, Int32}
@@ -55,15 +53,21 @@ abstract class Piece
     return nil
   end
 
-  def moves : Array(PieceMovement)
-    [] of PieceMovement
-  end
+  abstract def moves : Array(PieceMovement)
+  abstract def capture_moves : Array(PieceMovement)
 end
 
 class Pawn < Piece
   def moves : Array(PieceMovement)
     direction = @color == PieceColor::White ? Direction::N : Direction::S
     (1..2).to_a.map { |count| {direction, count}.as PieceMovement }
+  end
+
+  # TODO: Allow for pawn capture by "en-passant":
+  # https://www.chess.com/terms/en-passant
+  def capture_moves : Array(PieceMovement)
+    direction = @color == PieceColor::White ? Direction::N : Direction::S
+    direction === Direction::N ? [{Direction::NE, 1}.as PieceMovement, {Direction::NW, 1}.as PieceMovement] : [{Direction::SE, 1}.as PieceMovement, {Direction::SW, 1}.as PieceMovement]
   end
 end
 
@@ -74,6 +78,10 @@ class Rook < Piece
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::E, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::W, count}.as PieceMovement }
   end
+
+  def capture_moves : Array(PieceMovement)
+    self.moves
+  end
 end
 
 class Knight < Piece
@@ -81,6 +89,10 @@ class Knight < Piece
     [Direction::NE, Direction::SE, Direction::SW, Direction::NW].flat_map do |direction|
       [{direction, Jump::SHORT}.as PieceMovement, {direction, Jump::LONG}.as PieceMovement]
     end
+  end
+
+  def capture_moves : Array(PieceMovement)
+    self.moves
   end
 end
 
@@ -90,6 +102,10 @@ class Bishop < Piece
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SE, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SW, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NW, count}.as PieceMovement }
+  end
+
+  def capture_moves : Array(PieceMovement)
+    self.moves
   end
 end
 
@@ -103,6 +119,10 @@ class Queen < Piece
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SW, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::W, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NW, count}.as PieceMovement }
+  end
+
+  def capture_moves : Array(PieceMovement)
+    self.moves
   end
 end
 
@@ -118,5 +138,9 @@ class King < Piece
       {Direction::W, 1}.as PieceMovement,
       {Direction::NW, 1}.as PieceMovement,
     ]
+  end
+
+  def capture_moves : Array(PieceMovement)
+    self.moves
   end
 end

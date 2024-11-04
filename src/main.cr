@@ -48,3 +48,7 @@ puts board.draw
 
 board.move({'c', 4}, {'e', 3})
 puts board.draw
+
+# A blocked move until capture moves are considered
+# board.move({'a', 5}, {'a', 6})
+# puts board.draw
