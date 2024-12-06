@@ -3,25 +3,25 @@ require "./piece"
 
 board = Board.new
 
-# Add white pieces
-board.add_piece(6, 0, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 1, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 2, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 3, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 4, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 5, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 6, Pawn.new(PieceColor::White, board))
-board.add_piece(6, 7, Pawn.new(PieceColor::White, board))
+# Add white pawns
+board.add_piece({'a', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'b', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'c', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'d', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'e', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'f', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'g', 2}, Pawn.new(PieceColor::White, board))
+board.add_piece({'h', 2}, Pawn.new(PieceColor::White, board))
 
 # Add other white pieces
-board.add_piece(7, 0, Rook.new(PieceColor::White, board))
-board.add_piece(7, 1, Knight.new(PieceColor::White, board))
-board.add_piece(7, 2, Bishop.new(PieceColor::White, board))
-board.add_piece(7, 3, Queen.new(PieceColor::White, board))
-board.add_piece(7, 4, King.new(PieceColor::White, board))
-board.add_piece(7, 5, Bishop.new(PieceColor::White, board))
-board.add_piece(7, 6, Knight.new(PieceColor::White, board))
-board.add_piece(7, 7, Rook.new(PieceColor::White, board))
+board.add_piece({'a', 1}, Rook.new(PieceColor::White, board))
+board.add_piece({'b', 1}, Knight.new(PieceColor::White, board))
+board.add_piece({'c', 1}, Bishop.new(PieceColor::White, board))
+board.add_piece({'d', 1}, Queen.new(PieceColor::White, board))
+board.add_piece({'e', 1}, King.new(PieceColor::White, board))
+board.add_piece({'f', 1}, Bishop.new(PieceColor::White, board))
+board.add_piece({'g', 1}, Knight.new(PieceColor::White, board))
+board.add_piece({'h', 1}, Rook.new(PieceColor::White, board))
 
 puts board.draw
 

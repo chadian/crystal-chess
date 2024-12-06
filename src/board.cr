@@ -23,9 +23,9 @@ class Board
     @structure = Array(Array(Piece | Nil)).new(8) { Array(Piece | Nil).new(8, nil) }
   end
 
-  # TODO: Convert this to a `BoardCoordinate` input
-  def add_piece(x : Number, y : Number, piece : Piece)
-    @structure[x][y] = piece
+  def add_piece(coordinate : BoardCoordinate, piece : Piece)
+    array_coordinates = convert_board_coordinate_to_array_matrix_coordinate(coordinate)
+    @structure[array_coordinates[0]][array_coordinates[1]] = piece
   end
 
   def move(from : BoardCoordinate, to : BoardCoordinate) : Piece | Nil
