@@ -9,28 +9,7 @@ enum PieceColor
   end
 end
 
-enum Direction
-  N
-  NE
-  E
-  SE
-  S
-  SW
-  W
-  NW
-end
-
-# Describes the movement of Knights
-# LONG - The jump starts with two squares and then one over
-# SHORT - The jump starts with one forward and then two over
-enum Jump
-  LONG
-  SHORT
-end
-
 MAX_SQUARE_MOVES = 7
-
-alias PieceMovement = {Direction, Int32} | {Direction, Jump}
 
 abstract class Piece
   getter color : PieceColor

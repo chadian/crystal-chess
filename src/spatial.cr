@@ -4,6 +4,29 @@ alias BoardCoordinate = {Char, Int32}
 # Represents a position within the array matrix representation how pieces are stored
 alias ArrayMatrixCoordinate = {Int32, Int32}
 
+# Describes the movement of Knights
+# LONG - The jump starts with two squares and then one over
+# SHORT - The jump starts with one forward and then two over
+enum Jump
+  LONG
+  SHORT
+end
+
+enum Direction
+  N
+  NE
+  E
+  SE
+  S
+  SW
+  W
+  NW
+end
+
+#  Represents a movement for a piece that is either in a direction by a number of squares or
+# in a direction described by a "jump" (for knights)
+alias PieceMovement = {Direction, Int32} | {Direction, Jump}
+
 # This is 1-indexed because ranks are 1-indexed. This keeps a consistent
 # indexing when referring to ranks and files together.
 FileNumber = {
