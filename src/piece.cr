@@ -14,7 +14,7 @@ MAX_SQUARE_MOVES = 7
 abstract class Piece
   getter color : PieceColor
 
-  def initialize(@color, @board : Board)
+  def initialize(@color)
   end
 
   abstract def moves : Array(PieceMovement)
