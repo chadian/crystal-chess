@@ -1,0 +1,69 @@
+# Problems found: 3
+# Run `ameba --only Lint/UselessAssign` for details
+Lint/UselessAssign:
+  Description: Disallows useless variable assignments
+  ExcludeTypeDeclarations: false
+  Excluded:
+    - spec/unit/board_spec.cr
+    - spec/unit/spatial_spec.cr
+    - src/spatial.cr
+  Enabled: true
+  Severity: Warning
+
+# Problems found: 9
+# Run `ameba --only Naming/VariableNames` for details
+Naming/VariableNames:
+  Description: Enforces variable names to be in underscored case
+  Excluded:
+    - spec/unit/piece_spec.cr
+    - src/board.cr
+  Enabled: true
+  Severity: Convention
+
+# Problems found: 3
+# Run `ameba --only Documentation/DocumentationAdmonition` for details
+Documentation/DocumentationAdmonition:
+  Description: Reports documentation admonitions
+  Timezone: UTC
+  Excluded:
+    - src/spatial.cr
+    - src/board.cr
+    - src/piece.cr
+  Admonitions:
+    - TODO
+    - FIXME
+    - BUG
+  Enabled: true
+  Severity: Warning
+
+# Problems found: 2
+# Run `ameba --only Metrics/CyclomaticComplexity` for details
+Metrics/CyclomaticComplexity:
+  Description: Disallows methods with a cyclomatic complexity higher than `MaxComplexity`
+  MaxComplexity: 10
+  Excluded:
+    - src/spatial.cr
+    - src/board.cr
+  Enabled: true
+  Severity: Warning
+
+# Problems found: 2
+# Run `ameba --only Style/ParenthesesAroundCondition` for details
+Style/ParenthesesAroundCondition:
+  Description: Disallows redundant parentheses around control expressions
+  ExcludeTernary: false
+  AllowSafeAssignment: false
+  Excluded:
+    - src/spatial.cr
+    - src/board.cr
+  Enabled: true
+  Severity: Convention
+
+# Problems found: 1
+# Run `ameba --only Naming/PredicateName` for details
+Naming/PredicateName:
+  Description: Disallows tautological predicate names
+  Excluded:
+    - src/board.cr
+  Enabled: true
+  Severity: Convention

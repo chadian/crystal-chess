@@ -1,0 +1,14 @@
+name: cchess
+version: 0.1.0
+
+description: |
+  The game of chess written in crystal lang
+
+# dependencies:
+#   pg:
+#     github: will/crystal-pg
+#     version: "~> 0.5"
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
