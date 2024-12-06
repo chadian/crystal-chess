@@ -10,11 +10,11 @@ end
 
 describe "Piece" do
   it "all pieces can be initialized with Black and White" do
-    [Pawn, Rook, Knight, Bishop, Queen, King].each do |pieceClass|
-      black_piece = pieceClass.new(PieceColor::Black)
+    [Pawn, Rook, Knight, Bishop, Queen, King].each do |piece_class|
+      black_piece = piece_class.new(PieceColor::Black)
       black_piece.color.should eq PieceColor::Black
 
-      white_piece = pieceClass.new(PieceColor::White)
+      white_piece = piece_class.new(PieceColor::White)
       white_piece.color.should eq PieceColor::White
     end
   end
