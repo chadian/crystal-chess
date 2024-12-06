@@ -18,9 +18,11 @@ PieceCharacterSymbol = {
 class Board
   getter structure
 
+  @@DEFAULT_RANK_COUNT = 8
+  @@DEFAULT_FILE_COUNT = 8
+
   def initialize
-    #  create 8x8 board
-    @structure = Array(Array(Piece | Nil)).new(8) { Array(Piece | Nil).new(8, nil) }
+    @structure = Array(Array(Piece | Nil)).new(@@DEFAULT_RANK_COUNT) { Array(Piece | Nil).new(@@DEFAULT_FILE_COUNT, nil) }
   end
 
   def add_piece(coordinate : BoardCoordinate, piece : Piece)
