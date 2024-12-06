@@ -24,8 +24,25 @@ class Board
   end
 
   def add_piece(coordinate : BoardCoordinate, piece : Piece)
+    existing_piece = piece_at_coordinate(coordinate)
+
+    if !existing_piece.nil?
+      raise "Cannot add piece #{piece} to #{coordinate}, an existing piece #{existing_piece} exists at that coordinate"
+    end
+
     array_coordinates = convert_board_coordinate_to_array_matrix_coordinate(coordinate)
     @structure[array_coordinates[0]][array_coordinates[1]] = piece
+  end
+
+  def clear_coordinate(coordinate : BoardCoordinate)
+    array_coordinates = convert_board_coordinate_to_array_matrix_coordinate(coordinate)
+    @structure[array_coordinates[0]][array_coordinates[1]] = nil
+  end
+
+  def piece_at_coordinate(coordinate : BoardCoordinate) : Piece?
+    array_coordinates = convert_board_coordinate_to_array_matrix_coordinate(coordinate)
+    piece = @structure[array_coordinates[0]][array_coordinates[1]]
+    piece
   end
 
   def move(from : BoardCoordinate, to : BoardCoordinate) : Piece | Nil
