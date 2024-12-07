@@ -72,7 +72,7 @@ class Board
     end
 
     # can assume can_capture is `true` because its been checked to be a valid above
-    if move_blocked?(from, movement, {can_capture: true})
+    if move_blocked?(from, to, {can_capture: true})
       raise "Movement #{from} -> #{to} is blocked"
     end
 
@@ -85,13 +85,14 @@ class Board
     piece_at_to_coordinate
   end
 
-  def move_blocked?(start : BoardCoordinate, movement : PieceMovement, options : {can_capture: Bool}) : Bool
+  def move_blocked?(start : BoardCoordinate, to : BoardCoordinate, options : {can_capture: Bool}) : Bool
+    movement = create_movement start, to
     direction = movement[0]
     count = movement[1]
 
-    # jumps are never considered blocked moves (a "jump" movement is only used by knights)
+    # jumps are only considered blocked if the `to` board coordinate is blocked by a piece and `can_capture` is false
     if count.is_a? Jump
-      return false
+      return piece_at_coordinate(to).nil? ? false : !options[:can_capture]
     end
 
     start_coordinate = convert_board_coordinate_to_array_matrix_coordinate(start)
