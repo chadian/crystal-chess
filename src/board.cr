@@ -85,12 +85,11 @@ class Board
     piece_at_to_coordinate
   end
 
-  def move_blocked?(start : BoardCoordinate, movement : PieceMovement, can_capture : {can_capture: Bool}) : Bool
+  def move_blocked?(start : BoardCoordinate, movement : PieceMovement, options : {can_capture: Bool}) : Bool
     direction = movement[0]
     count = movement[1]
 
-    # jumps are never considered blocked moves, knights are not blocked
-    # by pieces in their path
+    # jumps are never considered blocked moves (a "jump" movement is only used by knights)
     if count.is_a? Jump
       return false
     end
@@ -129,7 +128,7 @@ class Board
       # on final step
       if count == step
         # on final step, the square must be empty or capturable
-        return on_square.nil? ? false : !can_capture
+        return on_square.nil? ? false : !options[:can_capture]
       elsif !on_square.nil?
         # en route, the current square is not empty
         return true

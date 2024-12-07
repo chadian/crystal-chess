@@ -174,4 +174,85 @@ describe "Board" do
       board.piece_at_coordinate(to_coordinate).should be moving_piece
     end
   end
+
+  describe "#move_blocked?" do
+    it "returns false when there is no piece blocking" do
+      board = Board.new
+      moving_piece = ForwardMovingPieceWithoutCaptureMoves.new PieceColor::Black
+
+      from_coordinate = {'a', 1}
+      to_coordinate = {'a', 2}
+      movement = create_movement(from_coordinate, to_coordinate)
+
+      board.add_piece(from_coordinate, moving_piece)
+      result = board.move_blocked?(from_coordinate, movement, {can_capture: false})
+      result.should eq false
+    end
+
+    describe "when can_capture is false" do
+      it "returns true when a non-jump movement is blocked" do
+        board = Board.new
+        moving_piece = ForwardMovingPieceWithoutCaptureMoves.new PieceColor::Black
+        blocking_piece_on_to_coordinate = PieceWithNoMoves.new PieceColor::White
+
+        from_coordinate = {'a', 1}
+        blocked_to_coordinate = {'a', 2}
+        blocked_movement = create_movement(from_coordinate, blocked_to_coordinate)
+
+        board.add_piece(from_coordinate, moving_piece)
+        board.add_piece(blocked_to_coordinate, blocking_piece_on_to_coordinate)
+
+        result = board.move_blocked?(from_coordinate, blocked_movement, {can_capture: false})
+        result.should eq true
+      end
+    end
+
+    describe "when can_capture option is true" do
+      it "returns false when a non-jump movement is blocked" do
+        board = Board.new
+        moving_piece = ForwardMovingPieceWithoutCaptureMoves.new PieceColor::Black
+        blocking_piece_on_to_coordinate = PieceWithNoMoves.new PieceColor::White
+
+        from_coordinate = {'a', 1}
+        blocked_to_coordinate = {'a', 2}
+        blocked_movement = create_movement(from_coordinate, blocked_to_coordinate)
+
+        board.add_piece(from_coordinate, moving_piece)
+        board.add_piece(blocked_to_coordinate, blocking_piece_on_to_coordinate)
+
+        result = board.move_blocked?(from_coordinate, blocked_movement, {can_capture: true})
+        result.should eq false
+      end
+    end
+
+    it "returns false for a jump movement for can_capture: true and can_capture: false" do
+      board = Board.new
+      jumping_piece = Knight.new PieceColor::Black
+      blocking_piece_on_to_coordinate = PieceWithNoMoves.new PieceColor::White
+      surrounding_blocking_piece_1 = PieceWithNoMoves.new PieceColor::White
+      surrounding_blocking_piece_2 = PieceWithNoMoves.new PieceColor::White
+      surrounding_blocking_piece_3 = PieceWithNoMoves.new PieceColor::White
+      surrounding_blocking_piece_4 = PieceWithNoMoves.new PieceColor::White
+
+      from_coordinate = {'a', 1}
+      blocked_to_coordinate = {'c', 2}
+      blocked_movement = create_movement(from_coordinate, blocked_to_coordinate)
+
+      board.add_piece(from_coordinate, jumping_piece)
+      board.add_piece(blocked_to_coordinate, blocking_piece_on_to_coordinate)
+
+      # Add pieces all surrounding the squares en route to the "to_coordinate" to
+      # test that jumps are not impacted by pieces "in the way"
+      board.add_piece({'a', 2}, surrounding_blocking_piece_1)
+      board.add_piece({'b', 1}, surrounding_blocking_piece_2)
+      board.add_piece({'b', 2}, surrounding_blocking_piece_3)
+      board.add_piece({'c', 1}, surrounding_blocking_piece_4)
+
+      result = board.move_blocked?(from_coordinate, blocked_movement, {can_capture: true})
+      result.should eq false
+
+      result = board.move_blocked?(from_coordinate, blocked_movement, {can_capture: false})
+      result.should eq false
+    end
+  end
 end
