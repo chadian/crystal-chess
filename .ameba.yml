@@ -10,16 +10,6 @@ Lint/UselessAssign:
   Enabled: true
   Severity: Warning
 
-# Problems found: 9
-# Run `ameba --only Naming/VariableNames` for details
-Naming/VariableNames:
-  Description: Enforces variable names to be in underscored case
-  Excluded:
-    - spec/unit/piece_spec.cr
-    - src/board.cr
-  Enabled: true
-  Severity: Convention
-
 # Problems found: 3
 # Run `ameba --only Documentation/DocumentationAdmonition` for details
 Documentation/DocumentationAdmonition:
@@ -46,24 +36,3 @@ Metrics/CyclomaticComplexity:
     - src/board.cr
   Enabled: true
   Severity: Warning
-
-# Problems found: 2
-# Run `ameba --only Style/ParenthesesAroundCondition` for details
-Style/ParenthesesAroundCondition:
-  Description: Disallows redundant parentheses around control expressions
-  ExcludeTernary: false
-  AllowSafeAssignment: false
-  Excluded:
-    - src/spatial.cr
-    - src/board.cr
-  Enabled: true
-  Severity: Convention
-
-# Problems found: 1
-# Run `ameba --only Naming/PredicateName` for details
-Naming/PredicateName:
-  Description: Disallows tautological predicate names
-  Excluded:
-    - src/board.cr
-  Enabled: true
-  Severity: Convention

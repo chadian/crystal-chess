@@ -51,7 +51,7 @@ def convert_board_coordinate_to_array_matrix_coordinate(coordinate : BoardCoordi
   # TODO: Move this check into the `Board` class, assume that a movement could
   # be played on a different board sizes.
   array_matrix_range = 0..7
-  if (!(array_matrix_range.includes?(file_number)) || !(array_matrix_range.includes?(rank)))
+  if !(array_matrix_range.includes?(file_number)) || !(array_matrix_range.includes?(rank))
     raise "BoardCoordinate #{coordinate} is out of range of the ArrayMatrixCoordinate limits #{array_matrix_range}"
   end
 
@@ -83,7 +83,6 @@ def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovemen
   is_knight_jump = (horizontal_diff == 2 && vertical_diff == 1) || (horizontal_diff == 1 && vertical_diff == 2)
 
   if is_knight_jump
-    knight_moves = 4
     knight_movement = case {vertical_direction, vertical_diff, horizontal_direction, horizontal_diff}
                       when {Direction::N, 2, Direction::E, 1}
                         {Direction::NE, Jump::LONG}.as PieceMovement

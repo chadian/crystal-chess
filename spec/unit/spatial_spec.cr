@@ -24,7 +24,7 @@ describe "#convert_board_coordinate_to_array_matrix_coordinate" do
 
   it "raises an exception for an invalid rank coordinate" do
     expect_raises(Exception) do
-      array_matrix_coordinate = convert_board_coordinate_to_array_matrix_coordinate({'h', 9})
+      convert_board_coordinate_to_array_matrix_coordinate({'h', 9})
     end
   end
 end

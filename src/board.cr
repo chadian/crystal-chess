@@ -15,14 +15,14 @@ PieceCharacterSymbol = {
   King:   "♚",
 }
 
+DEFAULT_RANK_COUNT = 8
+DEFAULT_FILE_COUNT = 8
+
 class Board
   getter structure
 
-  @@DEFAULT_RANK_COUNT = 8
-  @@DEFAULT_FILE_COUNT = 8
-
   def initialize
-    @structure = Array(Array(Piece | Nil)).new(@@DEFAULT_RANK_COUNT) { Array(Piece | Nil).new(@@DEFAULT_FILE_COUNT, nil) }
+    @structure = Array(Array(Piece | Nil)).new(DEFAULT_RANK_COUNT) { Array(Piece | Nil).new(DEFAULT_FILE_COUNT, nil) }
   end
 
   def add_piece(coordinate : BoardCoordinate, piece : Piece)
@@ -72,7 +72,7 @@ class Board
     end
 
     # can assume can_capture is `true` because its been checked to be a valid above
-    if is_move_blocked(from, movement, {can_capture: true})
+    if move_blocked?(from, movement, {can_capture: true})
       raise "Movement #{from} -> #{to} is blocked"
     end
 
@@ -85,7 +85,7 @@ class Board
     piece_at_to_coordinate
   end
 
-  def is_move_blocked(start : BoardCoordinate, movement : PieceMovement, can_capture : {can_capture: Bool}) : Bool
+  def move_blocked?(start : BoardCoordinate, movement : PieceMovement, can_capture : {can_capture: Bool}) : Bool
     direction = movement[0]
     count = movement[1]
 
@@ -151,7 +151,7 @@ class Board
       row.each_index do |column_index|
         square = @structure[row_index][column_index]
 
-        if (column_index == 0)
+        if column_index == 0
           # output edge of board rank markers
           print "#{8 - row_index} "
         end
@@ -161,8 +161,8 @@ class Board
         if square == nil
           print "   ".colorize.on(current_color).fore(:red)
         else
-          pieceCharacter = PieceCharacterSymbol[square.class.name]
-          print " #{pieceCharacter} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black)
+          piece_character = PieceCharacterSymbol[square.class.name]
+          print " #{piece_character} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black)
         end
       end
       print "\n"
