@@ -2,9 +2,11 @@ require "./board"
 
 class Game
   getter board
+  getter turn : PieceColor
 
   def initialize
     @board = Board.new
+    @turn = PieceColor::White
   end
 
   def setup_board

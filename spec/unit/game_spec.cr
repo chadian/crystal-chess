@@ -7,6 +7,11 @@ describe "Game" do
     (game.is_a? Game).should be_true
   end
 
+  it "initializes with the first turn for the white pieces" do
+    game = Game.new
+    game.turn.should eq PieceColor::White
+  end
+
   it "has a board" do
     game = Game.new
     (game.board.is_a? Board).should be_true
