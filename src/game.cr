@@ -1,17 +1,37 @@
 require "./board"
 
+alias GameTrackedMove = NamedTuple(from: BoardCoordinate, to: BoardCoordinate)
+
 class Game
-  getter board
+  getter board : Board
   getter turn : PieceColor
 
-  def initialize
-    @board = Board.new
+  @moves : Array(GameTrackedMove) = [] of GameTrackedMove
+
+  def initialize(board : Board = Board.new)
+    @board = board
     @turn = PieceColor::White
   end
 
   def setup_board
     add_starting_white_pieces
     add_starting_black_pieces
+  end
+
+  def move(from : BoardCoordinate, to : BoardCoordinate)
+    piece_to_move = board.piece_at_coordinate from
+
+    if piece_to_move.nil?
+      raise "Expected the `from` argument to be the coordinate of a piece"
+    end
+
+    if piece_to_move.color != @turn
+      raise "Cannot move piece #{piece_to_move} at #{from} because the turn is set to color #{@turn} but that piece has color #{piece_to_move.color}"
+    end
+
+    captured_piece = board.move(from, to)
+    @moves.push({from: from, to: to})
+    @turn = @turn.inverse
   end
 
   private def add_starting_white_pieces

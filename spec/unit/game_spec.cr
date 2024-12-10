@@ -1,20 +1,40 @@
 require "spec"
 require "../../src/game"
 
+class BoardWithSpiedMove < Board
+  getter spied_move_calls
+  @spied_move_calls : Array(GameTrackedMove) = [] of GameTrackedMove
+
+  def move(from : BoardCoordinate, to : BoardCoordinate)
+    super
+    @spied_move_calls.push({from: from, to: to})
+  end
+end
+
+# Considered valid when from an initial game state via `Game#setup_board`
+valid_move_from_coordinate = {'a', 2}
+valid_move_to_coordinate = {'a', 3}
+
+make_valid_move = ->(game : Game) {
+  game.move(valid_move_from_coordinate, valid_move_to_coordinate)
+}
+
 describe "Game" do
-  it "can be initialized" do
-    game = Game.new
-    (game.is_a? Game).should be_true
-  end
+  describe "#new" do
+    it "can be initialized" do
+      game = Game.new
+      (game.is_a? Game).should be_true
+    end
 
-  it "initializes with the first turn for the white pieces" do
-    game = Game.new
-    game.turn.should eq PieceColor::White
-  end
+    it "initializes with the first turn for the white pieces" do
+      game = Game.new
+      game.turn.should eq PieceColor::White
+    end
 
-  it "has a board" do
-    game = Game.new
-    (game.board.is_a? Board).should be_true
+    it "has a board" do
+      game = Game.new
+      (game.board.is_a? Board).should be_true
+    end
   end
 
   describe "#setup_board" do
@@ -97,6 +117,71 @@ describe "Game" do
         ((game.board.piece_at_coordinate({'f', 8}).as Piece).color).should eq PieceColor::Black
         ((game.board.piece_at_coordinate({'g', 8}).as Piece).color).should eq PieceColor::Black
         ((game.board.piece_at_coordinate({'h', 8}).as Piece).color).should eq PieceColor::Black
+      end
+    end
+  end
+
+  describe "#move" do
+    it "raises when the from coordinate does not have a piece to be moved" do
+      game = Game.new
+
+      expect_raises(Exception, "Expected the `from` argument to be the coordinate of a piece") do
+        game.move({'a', 1}, {'a', 2})
+      end
+    end
+
+    it "raises when the from coordinate is a piece color that is not the current Game @turn" do
+      game = Game.new
+      game.setup_board
+
+      black_pawn_coordinate = {'a', 7}
+      black_pawn_forward_coordinate = {'a', 6}
+      black_pawn = game.board.piece_at_coordinate black_pawn_coordinate
+      (black_pawn.as Piece).color.should eq PieceColor::Black
+
+      game.turn.should eq PieceColor::White
+
+      expect_raises(Exception, "turn is set to color White but that piece has color Black") do
+        game.move(black_pawn_coordinate, black_pawn_forward_coordinate)
+      end
+    end
+
+    describe "with a valid move" do
+      #  instance replaced in `before_each`, prevents needing to do nil checks or casting
+      game : Game = Game.new
+
+      before_each do
+        game = Game.new
+        game.setup_board
+      end
+
+      it "moves a piece when the move is valid and its correct piece color's turn" do
+        game.board.piece_at_coordinate(valid_move_from_coordinate).should be_a Pawn
+        game.board.piece_at_coordinate(valid_move_to_coordinate).should eq nil
+
+        make_valid_move.call(game)
+
+        game.board.piece_at_coordinate(valid_move_from_coordinate).should be_nil
+        game.board.piece_at_coordinate(valid_move_to_coordinate).should be_a Pawn
+      end
+
+      it "moves a piece and switches changes the assigned color to @turn" do
+        game.turn.should eq PieceColor::White
+        make_valid_move.call(game)
+        game.turn.should eq PieceColor::Black
+      end
+
+      it "calls #move on the underlying Board class" do
+        spied_board = BoardWithSpiedMove.new
+        # Create game with spied board
+        game = Game.new spied_board
+        game.setup_board
+
+        ((game.board).as BoardWithSpiedMove).spied_move_calls.should eq([] of Array(GameTrackedMove))
+
+        make_valid_move.call(game)
+
+        ((game.board).as BoardWithSpiedMove).spied_move_calls.should eq([{from: valid_move_from_coordinate, to: valid_move_to_coordinate}])
       end
     end
   end
