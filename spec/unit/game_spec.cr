@@ -183,6 +183,39 @@ describe "Game" do
 
         ((game.board).as BoardWithSpiedMove).spied_move_calls.should eq([{from: valid_move_from_coordinate, to: valid_move_to_coordinate}])
       end
+
+      it "tracks captured pieces when a capturing move is made (white captures black)" do
+        game = Game.new
+        white_queen = Queen.new(PieceColor::White)
+        black_queen = Queen.new(PieceColor::Black)
+
+        game.board.add_piece({'a', 1}, white_queen)
+        game.board.add_piece({'a', 2}, black_queen)
+        game.move({'a', 1}, {'a', 2})
+
+        game.captured_pieces[:black].size.should eq 0
+        game.captured_pieces[:white].size.should eq 1
+        game.captured_pieces[:white][0].should eq black_queen
+      end
+
+      it "tracks captured pieces when a capturing move is made (black captures white)" do
+        game = Game.new
+        white_queen = Queen.new(PieceColor::White)
+        black_queen = Queen.new(PieceColor::Black)
+
+        game.board.add_piece({'a', 1}, white_queen)
+        game.board.add_piece({'a', 2}, black_queen)
+
+        # move white queen, making it black's turn
+        game.move({'a', 1}, {'b', 1})
+
+        # move black queen to capture white queen
+        game.move({'a', 2}, {'b', 1})
+
+        game.captured_pieces[:white].size.should eq 0
+        game.captured_pieces[:black].size.should eq 1
+        game.captured_pieces[:black][0].should eq white_queen
+      end
     end
   end
 end

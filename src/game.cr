@@ -5,6 +5,7 @@ alias GameTrackedMove = NamedTuple(from: BoardCoordinate, to: BoardCoordinate)
 class Game
   getter board : Board
   getter turn : PieceColor
+  getter captured_pieces = {white: [] of Piece, black: [] of Piece}
 
   @moves : Array(GameTrackedMove) = [] of GameTrackedMove
 
@@ -30,6 +31,10 @@ class Game
     end
 
     captured_piece = board.move(from, to)
+    if (captured_piece.is_a? Piece)
+      captured_pieces[@turn.to_sym].push(captured_piece)
+    end
+
     @moves.push({from: from, to: to})
     @turn = @turn.inverse
   end
