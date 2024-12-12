@@ -32,7 +32,7 @@ class Game
     end
 
     captured_piece = board.move(from, to)
-    if (captured_piece.is_a? Piece)
+    if captured_piece.is_a? Piece
       captured_pieces[@turn.to_sym].push(captured_piece)
     end
 
