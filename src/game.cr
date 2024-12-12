@@ -6,6 +6,7 @@ class Game
   getter board : Board
   getter turn : PieceColor
   getter captured_pieces = {white: [] of Piece, black: [] of Piece}
+  getter moves : Array(GameTrackedMove)
 
   @moves : Array(GameTrackedMove) = [] of GameTrackedMove
 

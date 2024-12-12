@@ -35,6 +35,11 @@ describe "Game" do
       game = Game.new
       (game.board.is_a? Board).should be_true
     end
+
+    it "has an empty moves array" do
+      game = Game.new
+      game.moves.should eq [] of GameTrackedMove
+    end
   end
 
   describe "#setup_board" do
@@ -216,6 +221,23 @@ describe "Game" do
         game.captured_pieces[:black].size.should eq 1
         game.captured_pieces[:black][0].should eq white_queen
       end
+    end
+  end
+
+  describe "#moves" do
+    it "returns previously made moves" do
+      game = Game.new
+      game.setup_board
+
+      game.moves.should eq [] of GameTrackedMove
+
+      first_move = {from: {'a', 2}, to: {'a', 3}}
+      game.move(first_move[:from], first_move[:to])
+      game.moves.should eq [first_move]
+
+      second_move = {from: {'a', 7}, to: {'a', 6}}
+      game.move(second_move[:from], second_move[:to])
+      game.moves.should eq [first_move, second_move]
     end
   end
 end
