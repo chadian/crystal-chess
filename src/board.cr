@@ -58,7 +58,7 @@ class Board
     end
 
     movement = create_movement(from, to)
-    is_valid_piece_move = piece.moves.includes?(movement)
+    is_valid_piece_move = piece.moves.includes?(movement) || piece.capture_moves
 
     if !is_valid_piece_move
       raise "Movement #{from} -> #{to} is not a valid movement for piece #{piece.class.name}"
@@ -144,6 +144,8 @@ class Board
     light_tile = :yellow
     current_color = dark_tile
 
+    draw_output = ""
+
     @structure.each_index do |row_index|
       row = @structure[row_index]
       current_color = current_color == dark_tile ? light_tile : dark_tile
@@ -153,22 +155,23 @@ class Board
 
         if column_index == 0
           # output edge of board rank markers
-          print "#{8 - row_index} "
+          draw_output += "#{8 - row_index} "
         end
 
         current_color = current_color == dark_tile ? light_tile : dark_tile
 
         if square == nil
-          print "   ".colorize.on(current_color).fore(:red)
+          draw_output += "   ".colorize.on(current_color).fore(:red).to_s
         else
           piece_character = PieceCharacterSymbol[square.class.name]
-          print " #{piece_character} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black)
+          draw_output += " #{piece_character} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black).to_s
         end
       end
-      print "\n"
+
+      draw_output += "\n"
     end
 
     # output edge of board file markers
-    print "   a  b  c  d  e  f  g  h"
+    draw_output += "   a  b  c  d  e  f  g  h"
   end
 end
