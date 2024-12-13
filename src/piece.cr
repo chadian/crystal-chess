@@ -11,6 +11,10 @@ enum PieceColor
   def to_sym
     self == PieceColor::White ? :white : :black
   end
+
+  def to_s
+    self == PieceColor::White ? "White" : "Black"
+  end
 end
 
 MAX_SQUARE_MOVES = 7
