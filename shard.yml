@@ -12,3 +12,7 @@ description: |
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
+
+targets:
+  cchess:
+    main: src/main.cr
