@@ -1,3 +1,4 @@
+require "colorize"
 require "./game"
 
 class Interactive
@@ -48,8 +49,26 @@ class Interactive
     {from: board_coordinates[0], to: board_coordinates[1]}
   end
 
+  def game_header
+    white_circle = "●"
+    black_circle = "○"
+    current_turn_circle = @game.turn.to_sym == :white ? white_circle : black_circle
+
+    game_header = <<-GAME_HEADER
+    #{"Current turn".colorize.bright}
+      #{current_turn_circle} #{@game.turn.to_s.downcase}
+    #{"Captured pieces".colorize(:white).bright}
+      by white           #{@game.captured_pieces[:white].size}
+      by black           #{@game.captured_pieces[:black].size}
+    GAME_HEADER
+
+    game_header
+  end
+
   def loop
     # draw initial board
+    puts game_header
+    puts ""
     puts @game.board.draw
     puts ""
 
@@ -61,8 +80,20 @@ class Interactive
         next
       end
 
-      @game.move(move[:from], move[:to])
+      exception : Exception? = nil
+      begin
+        @game.move(move[:from], move[:to])
+      rescue ex : Exception
+        exception = ex
+      end
 
+      if !exception.nil?
+        puts "Error: #{exception.message}".colorize(:light_red)
+        puts ""
+      end
+
+      puts game_header
+      puts ""
       puts @game.board.draw
       puts ""
     end
