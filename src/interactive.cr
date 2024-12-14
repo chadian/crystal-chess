@@ -7,7 +7,7 @@ class Interactive
   def initialize(game : Game = Game.new)
     # Assume that if no moves have been played that the game's board
     # should be setup with all the pieces needed for a new game
-    if (game.moves.size == 0)
+    if game.moves.size == 0
       game.setup_board
     end
 
@@ -18,7 +18,7 @@ class Interactive
     @game = game
   end
 
-  def get_move : GameTrackedMove?
+  def move_input : GameTrackedMove?
     puts "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):"
     from_stdin = STDIN.gets
     puts "\n"
@@ -72,8 +72,8 @@ class Interactive
     puts @game.board.draw
     puts ""
 
-    while true
-      move = get_move
+    loop do
+      move = move_input
 
       if move.nil?
         # skip until a valid move is given

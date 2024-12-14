@@ -62,7 +62,7 @@ class Board
     is_capture_move = !piece_at_to_coordinate.nil?
 
     is_valid_move = false
-    if (is_capture_move)
+    if is_capture_move
       is_valid_move = piece.capture_moves.includes?(movement) && piece.color.inverse == (piece_at_to_coordinate.as Piece).color
     else
       is_valid_move = piece.moves.includes?(movement)
