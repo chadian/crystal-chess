@@ -1,20 +1,7 @@
 require "colorize"
 require "./game"
 
-abstract class StdInReader
-  def gets
-  end
-end
-
-class CoreStdInReader < StdInReader
-  def gets
-    STDIN.gets
-  end
-end
-
 class Interactive
-  # exposed for replacement for tests
-  property stdin : StdInReader = CoreStdInReader.new
   getter game : Game
 
   def initialize(game : Game = Game.new)
@@ -27,10 +14,18 @@ class Interactive
     @game = game
   end
 
+  def output(str : String)
+    puts str
+  end
+
+  protected def stdin : String?
+    STDIN.gets
+  end
+
   def move_input : GameTrackedMove?
-    puts "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):"
-    from_stdin = @stdin.gets
-    puts "\n"
+    output "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):"
+    from_stdin = stdin
+    output "\n"
 
     if from_stdin.nil?
       return nil
@@ -38,14 +33,14 @@ class Interactive
 
     coordinates = from_stdin.chomp.split(" ")
     if coordinates.size != 2
-      puts "Invalid input, specify both coordinates separated by a space (eg: \"a2 a3\"):"
-      nil
+      output "Invalid input, specify both coordinates separated by a space (eg: \"a2 a3\"):"
+      return nil
     end
 
     board_coordinates : Array(BoardCoordinate) = coordinates.map do |coordinate|
-      invalid_coordinate_message = "Invalid coordinate #{coordinate}. Coordinate should be a letter and a number, like \"a2\""
+      invalid_coordinate_message = "Invalid coordinate \"#{coordinate}\". Coordinate should be a letter and a number, like \"a2\""
       if coordinate.size != 2
-        puts invalid_coordinate_message
+        output invalid_coordinate_message
         return nil
       end
 
@@ -78,14 +73,18 @@ class Interactive
     game_header
   end
 
+  def continue_game_loop
+    game.stage == GameStage::InProgress
+  end
+
   def loop
     # draw initial board
-    puts game_header
-    puts ""
-    puts @game.board.draw
-    puts ""
+    output game_header
+    output ""
+    output @game.board.draw
+    output ""
 
-    loop do
+    while continue_game_loop
       move = move_input
 
       if move.nil?
@@ -101,14 +100,14 @@ class Interactive
       end
 
       if !exception.nil?
-        puts "Error: #{exception.message}".colorize(:light_red)
-        puts ""
+        output "Error: #{exception.message}".colorize(:light_red).to_s
+        output ""
       end
 
-      puts game_header
-      puts ""
-      puts @game.board.draw
-      puts ""
+      output game_header
+      output ""
+      output @game.board.draw
+      output ""
     end
   end
 end

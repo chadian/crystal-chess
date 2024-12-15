@@ -1,14 +1,26 @@
 require "spec"
 require "../../src/interactive"
 
-class MockStdInReader < StdInReader
-  @return_count : Int32 = 0
-  property gets_returns : Array(String?) = [] of String?
+class InteractiveTestable < Interactive
+  property mocked_stdin_returns = [] of String?
+  property mocked_stdin_returns_next_index : Int32 = 0
+  getter mocked_captured_output : Array(String) = [] of String
 
-  def gets
-    gets_return = @gets_returns[@return_count]
-    @return_count = @return_count + 1
+  def stdin
+    gets_return = @mocked_stdin_returns[@mocked_stdin_returns_next_index]
+
+    # auto-advance the index
+    @mocked_stdin_returns_next_index = @mocked_stdin_returns_next_index + 1
+
     gets_return
+  end
+
+  def output(str : String)
+    @mocked_captured_output << str
+  end
+
+  def continue_game_loop
+    super
   end
 end
 
@@ -105,31 +117,45 @@ describe "Interactive" do
   end
 
   describe "#move_input" do
-    interactive : Interactive = Interactive.new
-    mock_std_in_reader = MockStdInReader.new
+    interactive : InteractiveTestable = InteractiveTestable.new
 
     before_each do
-      interactive = Interactive.new
-      mock_std_in_reader = MockStdInReader.new
-      interactive.stdin = mock_std_in_reader
+      interactive = InteractiveTestable.new
     end
 
     it "returns a to/from movement tuple from a valid input" do
-      mock_std_in_reader.gets_returns = ["a2 a3"] of String?
+      interactive.mocked_stdin_returns = ["a2 a3"] of String?
       result = interactive.move_input
       result.should eq({from: {'a', 2}, to: {'a', 3}})
+      interactive.mocked_captured_output.should eq [
+        "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):",
+        "\n",
+      ]
     end
 
     it "returns a to/from movement tuple from a valid input (with ending new line \\n characters)" do
-      mock_std_in_reader.gets_returns = ["a2 a3\n"] of String?
+      interactive.mocked_stdin_returns = ["a2 a3\n"] of String?
       result = interactive.move_input
       result.should eq({from: {'a', 2}, to: {'a', 3}})
+      interactive.mocked_captured_output.should eq [
+        "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):",
+        "\n",
+      ]
     end
 
     it "returns nil if the input is invalid" do
-      mock_std_in_reader.gets_returns = [""] of String?
+      interactive.mocked_stdin_returns = [""] of String?
       result = interactive.move_input
       result.should eq nil
+      interactive.mocked_captured_output.should contain "Invalid input, specify both coordinates separated by a space (eg: \"a2 a3\"):"
+    end
+  end
+
+  describe "#game_loop" do
+    interactive : InteractiveTestable = InteractiveTestable.new
+
+    before_each do
+      interactive = InteractiveTestable.new
     end
   end
 end
