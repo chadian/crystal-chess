@@ -63,14 +63,14 @@ class Interactive
   end
 
   def game_header
-    white_circle = "●"
-    black_circle = "○"
+    white_circle = " ● "
+    black_circle = " ○ "
     current_turn_circle = @game.turn.to_sym == :white ? white_circle : black_circle
 
     game_header = <<-GAME_HEADER
     #{"Current turn".colorize.bright}
-      #{current_turn_circle} #{@game.turn.to_s.downcase}
-    #{"Captured pieces".colorize(:white).bright}
+      #{current_turn_circle.colorize.fore(:white).back(:black)} #{@game.turn.to_s.downcase}
+    #{"Captured pieces".colorize.bright}
       by white           #{@game.captured_pieces[:white].size}
       by black           #{@game.captured_pieces[:black].size}
     GAME_HEADER

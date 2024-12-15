@@ -44,7 +44,7 @@ describe "Interactive" do
       interactive = Interactive.new
       expected_game_header = <<-EXPECTED_GAME_HEADER
       Current turn
-        ● white
+         ●  white
       Captured pieces
         by white           0
         by black           0
@@ -59,7 +59,7 @@ describe "Interactive" do
 
       expected_game_header = <<-EXPECTED_GAME_HEADER
       Current turn
-        ○ black
+         ○  black
       Captured pieces
         by white           0
         by black           0
@@ -78,13 +78,30 @@ describe "Interactive" do
 
       expected_game_header = <<-EXPECTED_GAME_HEADER
       Current turn
-        ● white
+         ●  white
       Captured pieces
         by white           0
         by black           0
       EXPECTED_GAME_HEADER
 
       interactive.game_header.should eq expected_game_header
+    end
+
+    it "has the correct escape codes for current turn circle" do
+      # enable color to see escape codes in generated string
+      Colorize.enabled = true
+
+      interactive = Interactive.new
+
+      # FIRST ESCAPE: \e[97;40m
+      # \e is for for the escape start
+      # 97; is for a white bright text
+      # 40 is for a black background
+      # \m ends the sequence
+      #
+      # SECOND ESCAPE: \e[0m
+      # This resets the colors back to default
+      interactive.game_header.should contain("\e[97;40m ● \e[0m")
     end
   end
 
