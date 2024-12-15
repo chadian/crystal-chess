@@ -1,7 +1,20 @@
 require "colorize"
 require "./game"
 
+abstract class StdInReader
+  def gets
+  end
+end
+
+class CoreStdInReader < StdInReader
+  def gets
+    STDIN.gets
+  end
+end
+
 class Interactive
+  # exposed for replacement for tests
+  property stdin : StdInReader = CoreStdInReader.new
   getter game : Game
 
   def initialize(game : Game = Game.new)
@@ -14,13 +27,9 @@ class Interactive
     @game = game
   end
 
-  def load_game(game : Game)
-    @game = game
-  end
-
   def move_input : GameTrackedMove?
     puts "Enter a move by specifying both coordinates separated by a space (eg: \"a2 a3\"):"
-    from_stdin = STDIN.gets
+    from_stdin = @stdin.gets
     puts "\n"
 
     if from_stdin.nil?
@@ -42,7 +51,11 @@ class Interactive
 
       rank_and_file = coordinate.split("")
       board_movement = {rank_and_file[0][0], rank_and_file[1].to_i}
+
+      # this tests whether or not the board_movement is valid and raises if not,
+      # and should likely be replaced with a validity check
       convert_board_coordinate_to_array_matrix_coordinate(board_movement)
+
       board_movement
     end
 
