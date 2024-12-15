@@ -1,8 +1,6 @@
 require "spec"
 require "../../src/interactive"
 
-EXISTING_COLORIZE_ENABLED = Colorize.enabled?
-
 class MockStdInReader < StdInReader
   @return_count : Int32 = 0
   property gets_returns : Array(String?) = [] of String?
@@ -29,6 +27,7 @@ describe "Interactive" do
 
   describe "#game_header" do
     around_each do |test|
+      existing_colorized_enabled = Colorize.enabled?
       # Needed in order to do a clearer string comparison for #game_header
       # otherwise the colorized terminal codes are mixed within the string
       # and it's harder to assert the text on the test
@@ -37,7 +36,7 @@ describe "Interactive" do
       test.run
 
       # restore to previous setting
-      Colorize.enabled = EXISTING_COLORIZE_ENABLED
+      Colorize.enabled = existing_colorized_enabled
     end
 
     it "represents the initial state of the game" do
