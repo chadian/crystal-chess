@@ -28,14 +28,14 @@ describe "Interactive" do
   end
 
   describe "#game_header" do
-    before_each do
+    around_each do |test|
       # Needed in order to do a clearer string comparison for #game_header
       # otherwise the colorized terminal codes are mixed within the string
       # and it's harder to assert the text on the test
       Colorize.enabled = false
-    end
 
-    after_each do
+      test.run
+
       # restore to previous setting
       Colorize.enabled = EXISTING_COLORIZE_ENABLED
     end
