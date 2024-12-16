@@ -18,7 +18,7 @@ class Interactive
     puts str
   end
 
-  protected def stdin : String?
+  def stdin : String?
     STDIN.gets
   end
 
@@ -78,17 +78,20 @@ class Interactive
   end
 
   def loop
-    # draw initial board
-    output game_header
-    output ""
-    output @game.board.draw
-    output ""
-
+    full_output = true
     while continue_game_loop
+      if full_output
+        output game_header
+        output ""
+        output @game.board.draw
+        output ""
+      end
+
       move = move_input
 
       if move.nil?
         # skip until a valid move is given
+        full_output = false
         next
       end
 
@@ -102,12 +105,11 @@ class Interactive
       if !exception.nil?
         output "Error: #{exception.message}".colorize(:light_red).to_s
         output ""
+        full_output = false
+        next
       end
 
-      output game_header
-      output ""
-      output @game.board.draw
-      output ""
+      full_output = true
     end
   end
 end
