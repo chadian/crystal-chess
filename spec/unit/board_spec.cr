@@ -14,6 +14,8 @@ empty_board = [
 ]
 
 class PieceWithNoMoves < Piece
+  getter abbr : Char = 'X'
+
   def moves : Array(PieceMovement)
     [] of PieceMovement
   end
@@ -24,6 +26,8 @@ class PieceWithNoMoves < Piece
 end
 
 class ForwardMovingPieceWithoutCaptureMoves < Piece
+  getter abbr : Char = 'X'
+
   def moves : Array(PieceMovement)
     [{Direction::N, 1}] of PieceMovement
   end
@@ -34,6 +38,8 @@ class ForwardMovingPieceWithoutCaptureMoves < Piece
 end
 
 class ForwardMovingPieceWithCaptureMove < Piece
+  getter abbr : Char = 'X'
+
   def moves : Array(PieceMovement)
     [{Direction::N, 1}] of PieceMovement
   end
