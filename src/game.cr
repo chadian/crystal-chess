@@ -2,11 +2,19 @@ require "./board"
 
 alias GameTrackedMove = NamedTuple(from: BoardCoordinate, to: BoardCoordinate)
 
+enum GameStage
+  InProgress
+  WinWhite
+  WinBlack
+  Draw
+end
+
 class Game
   getter board : Board
   getter turn : PieceColor
   getter captured_pieces = {white: [] of Piece, black: [] of Piece}
   getter moves : Array(GameTrackedMove)
+  property stage : GameStage = GameStage::InProgress
 
   @moves : Array(GameTrackedMove) = [] of GameTrackedMove
 
