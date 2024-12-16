@@ -21,11 +21,14 @@ abstract class Piece
   def initialize(@color)
   end
 
+  abstract def abbr : Char
   abstract def moves : Array(PieceMovement)
   abstract def capture_moves : Array(PieceMovement)
 end
 
 class Pawn < Piece
+  getter abbr : Char = 'P'
+
   def moves : Array(PieceMovement)
     direction = @color == PieceColor::White ? Direction::N : Direction::S
     (1..2).to_a.map { |count| {direction, count}.as PieceMovement }
@@ -40,6 +43,8 @@ class Pawn < Piece
 end
 
 class Rook < Piece
+  getter abbr : Char = 'R'
+
   def moves : Array(PieceMovement)
     (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::N, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::S, count}.as PieceMovement } +
@@ -53,6 +58,8 @@ class Rook < Piece
 end
 
 class Knight < Piece
+  getter abbr : Char = 'N'
+
   def moves : Array(PieceMovement)
     [Direction::NE, Direction::SE, Direction::SW, Direction::NW].flat_map do |direction|
       [{direction, Jump::SHORT}.as PieceMovement, {direction, Jump::LONG}.as PieceMovement]
@@ -65,6 +72,8 @@ class Knight < Piece
 end
 
 class Bishop < Piece
+  getter abbr : Char = 'B'
+
   def moves : Array(PieceMovement)
     (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NE, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::SE, count}.as PieceMovement } +
@@ -78,6 +87,8 @@ class Bishop < Piece
 end
 
 class Queen < Piece
+  getter abbr : Char = 'Q'
+
   def moves : Array(PieceMovement)
     (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::N, count}.as PieceMovement } +
       (1..MAX_SQUARE_MOVES).to_a.map { |count| {Direction::NE, count}.as PieceMovement } +
@@ -95,6 +106,8 @@ class Queen < Piece
 end
 
 class King < Piece
+  getter abbr : Char = 'K'
+
   def moves : Array(PieceMovement)
     [
       {Direction::N, 1}.as PieceMovement,
