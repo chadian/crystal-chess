@@ -58,17 +58,18 @@ class Board
     end
 
     movement = create_movement(from, to)
-    is_valid_piece_move = piece.moves.includes?(movement)
+    piece_at_to_coordinate = @structure[to_array_matrix_coordinate[0]][to_array_matrix_coordinate[1]]
+    is_capture_move = !piece_at_to_coordinate.nil?
 
-    if !is_valid_piece_move
-      raise "Movement #{from} -> #{to} is not a valid movement for piece #{piece.class.name}"
+    is_valid_move = false
+    if is_capture_move
+      is_valid_move = piece.capture_moves.includes?(movement) && piece.color.inverse == (piece_at_to_coordinate.as Piece).color
+    else
+      is_valid_move = piece.moves.includes?(movement)
     end
 
-    piece_at_to_coordinate = @structure[to_array_matrix_coordinate[0]][to_array_matrix_coordinate[1]]
-    can_capture_piece_at_to_coordinate = piece.capture_moves.includes?(movement) && !piece_at_to_coordinate.nil? && piece.color.inverse == piece_at_to_coordinate.color
-
-    if !piece_at_to_coordinate.nil? && !can_capture_piece_at_to_coordinate
-      raise "Movement #{from} -> #{to} is blocked, cannot capture piece #{piece_at_to_coordinate} at #{to}"
+    if !is_valid_move
+      raise "Movement #{from} -> #{to} is not a valid movement for piece #{piece.class.name}"
     end
 
     # can assume can_capture is `true` because its been checked to be a valid above
@@ -144,6 +145,8 @@ class Board
     light_tile = :yellow
     current_color = dark_tile
 
+    draw_output = ""
+
     @structure.each_index do |row_index|
       row = @structure[row_index]
       current_color = current_color == dark_tile ? light_tile : dark_tile
@@ -153,22 +156,23 @@ class Board
 
         if column_index == 0
           # output edge of board rank markers
-          print "#{8 - row_index} "
+          draw_output += "#{8 - row_index} "
         end
 
         current_color = current_color == dark_tile ? light_tile : dark_tile
 
         if square == nil
-          print "   ".colorize.on(current_color).fore(:red)
+          draw_output += "   ".colorize.on(current_color).fore(:red).to_s
         else
           piece_character = PieceCharacterSymbol[square.class.name]
-          print " #{piece_character} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black)
+          draw_output += " #{piece_character} ".colorize.on(current_color).fore((square.as Piece).color.to_s == "White" ? :white : :black).to_s
         end
       end
-      print "\n"
+
+      draw_output += "\n"
     end
 
     # output edge of board file markers
-    print "   a  b  c  d  e  f  g  h"
+    draw_output += "   a  b  c  d  e  f  g  h"
   end
 end
