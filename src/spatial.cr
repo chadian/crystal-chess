@@ -4,6 +4,8 @@ alias BoardCoordinate = {Char, Int32}
 # Represents a position within the array matrix representation how pieces are stored
 alias ArrayMatrixCoordinate = {Int32, Int32}
 
+alias BoardStructure = Array(Array(Piece | Nil))
+
 # Describes the movement of Knights
 # LONG - The jump starts with two squares and then one over
 # SHORT - The jump starts with one forward and then two over
