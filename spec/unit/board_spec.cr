@@ -50,11 +50,32 @@ class ForwardMovingPieceWithCaptureMove < Piece
 end
 
 describe "Board" do
-  it "initializes with an empty array" do
-    board = Board.new
+  describe "#initialize" do
+    it "initializes with an empty array when a BoardStructure is not passed in" do
+      board = Board.new
 
-    # 8 x 8 array of `nil`
-    board.structure.should eq empty_board
+      # 8 x 8 array of `nil`
+      board.structure.should eq empty_board
+    end
+
+    it "raises if a BoardStructure passed in is not valid" do
+      board_structure : BoardStructure = [[] of Piece | Nil]
+      expect_raises(Exception, "Array structure for board is invalid, [[]]") do
+        board = Board.new(board_structure)
+      end
+    end
+
+    it "accepts a valid BoardStructure" do
+      board = Board.new
+      pawn = Pawn.new(PieceColor::Black)
+      board.add_piece({'a', 8}, pawn)
+      existing_board_structure = board.structure
+      existing_board_structure[0][0].should eq pawn
+
+      board_with_existing_structure = Board.new(existing_board_structure)
+      board_with_existing_structure.structure.should eq existing_board_structure
+      board_with_existing_structure.structure[0][0].should eq pawn
+    end
   end
 
   describe "#add_piece" do
