@@ -22,11 +22,12 @@ class Board
   getter structure : BoardStructure
 
   def initialize(structure : BoardStructure? = nil)
-    if (structure.nil?)
-      structure = Array.new(DEFAULT_BOARD_RANK_COUNT) { Array(Piece | Nil).new(DEFAULT_BOARD_FILE_COUNT, nil) }
+    if structure.nil?
+      @structure = Array.new(DEFAULT_BOARD_RANK_COUNT) { Array(Piece | Nil).new(DEFAULT_BOARD_FILE_COUNT, nil) }
+      return
     end
 
-    raise "Array structure for board is invalid, #{structure}" if is_valid_board_structure?(structure) == false
+    raise "Array structure for board is invalid, #{structure}" if valid_board_structure?(structure) == false
     @structure = structure
   end
 
@@ -189,7 +190,7 @@ class Board
     Board.new(cloned_structure)
   end
 
-  private def is_valid_board_structure?(structure : BoardStructure) : Bool
+  private def valid_board_structure?(structure : BoardStructure) : Bool
     return false if structure.size != DEFAULT_BOARD_RANK_COUNT
 
     structure.each do |file|
@@ -201,6 +202,6 @@ class Board
       end
     end
 
-    return true
+    true
   end
 end
