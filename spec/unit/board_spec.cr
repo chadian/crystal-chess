@@ -50,11 +50,32 @@ class ForwardMovingPieceWithCaptureMove < Piece
 end
 
 describe "Board" do
-  it "initializes with an empty array" do
-    board = Board.new
+  describe "#initialize" do
+    it "initializes with an empty array when a BoardStructure is not passed in" do
+      board = Board.new
 
-    # 8 x 8 array of `nil`
-    board.structure.should eq empty_board
+      # 8 x 8 array of `nil`
+      board.structure.should eq empty_board
+    end
+
+    it "raises if a BoardStructure passed in is not valid" do
+      board_structure : BoardStructure = [[] of Piece | Nil]
+      expect_raises(Exception, "Array structure for board is invalid, [[]]") do
+        board = Board.new(board_structure)
+      end
+    end
+
+    it "accepts a valid BoardStructure" do
+      board = Board.new
+      pawn = Pawn.new(PieceColor::Black)
+      board.add_piece({'a', 8}, pawn)
+      existing_board_structure = board.structure
+      existing_board_structure[0][0].should eq pawn
+
+      board_with_existing_structure = Board.new(existing_board_structure)
+      board_with_existing_structure.structure.should eq existing_board_structure
+      board_with_existing_structure.structure[0][0].should eq pawn
+    end
   end
 
   describe "#add_piece" do
@@ -262,6 +283,41 @@ describe "Board" do
         result = board.move_blocked?(from_coordinate, blocked_to_coordinate, {can_capture: false})
         result.should eq true
       end
+    end
+  end
+
+  describe "#clone" do
+    board : Board = Board.new
+    pawn = Pawn.new(PieceColor::Black)
+    pawn_at_coordinate = {'a', 8}
+
+    before_each do
+      board = Board.new
+      pawn = Pawn.new(PieceColor::Black)
+      board.add_piece(pawn_at_coordinate, pawn)
+    end
+
+    it "creates a Board with a copy of @structure" do
+      board.piece_at_coordinate(pawn_at_coordinate).should eq pawn
+
+      board_clone : Board = board.clone
+
+      # `board_clone` instance is not identical to the original `board` instance
+      board_clone.should_not be board
+
+      # `board_clone` structure is not strictly identical except in structure
+      board_clone.structure.should_not be board.structure
+      board_clone.structure.should eq board.structure
+
+      # `board_clone` structure row/rank is not strictly identical except in structure
+      board_clone.structure[0].should_not be board.structure[0]
+      board_clone.structure[0].should eq board.structure[0]
+    end
+
+    it "creates a new board structure but references the same original pieces instances" do
+      board.piece_at_coordinate(pawn_at_coordinate).should eq pawn
+      board_clone : Board = board.clone
+      board_clone.piece_at_coordinate(pawn_at_coordinate).should eq pawn
     end
   end
 end

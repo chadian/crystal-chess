@@ -15,14 +15,20 @@ PieceCharacterSymbol = {
   King:   "♚",
 }
 
-DEFAULT_RANK_COUNT = 8
-DEFAULT_FILE_COUNT = 8
+DEFAULT_BOARD_RANK_COUNT = 8
+DEFAULT_BOARD_FILE_COUNT = 8
 
 class Board
-  getter structure
+  getter structure : BoardStructure
 
-  def initialize
-    @structure = Array(Array(Piece | Nil)).new(DEFAULT_RANK_COUNT) { Array(Piece | Nil).new(DEFAULT_FILE_COUNT, nil) }
+  def initialize(structure : BoardStructure? = nil)
+    if structure.nil?
+      @structure = Array.new(DEFAULT_BOARD_RANK_COUNT) { Array(Piece | Nil).new(DEFAULT_BOARD_FILE_COUNT, nil) }
+      return
+    end
+
+    raise "Array structure for board is invalid, #{structure}" if valid_board_structure?(structure) == false
+    @structure = structure
   end
 
   def add_piece(coordinate : BoardCoordinate, piece : Piece)
@@ -174,5 +180,28 @@ class Board
 
     # output edge of board file markers
     draw_output += "   a  b  c  d  e  f  g  h"
+  end
+
+  def clone : Board
+    cloned_structure = @structure.map do |rank|
+      rank.dup
+    end
+
+    Board.new(cloned_structure)
+  end
+
+  private def valid_board_structure?(structure : BoardStructure) : Bool
+    return false if structure.size != DEFAULT_BOARD_RANK_COUNT
+
+    structure.each do |file|
+      return false if structure.size != DEFAULT_BOARD_FILE_COUNT
+
+      file.each do |piece_or_nil|
+        # Realistically, this is expected to be caught by the compiler
+        return false if piece_or_nil != nil && piece_or_nil.is_a? Piece != true
+      end
+    end
+
+    true
   end
 end
