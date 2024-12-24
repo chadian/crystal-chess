@@ -285,4 +285,39 @@ describe "Board" do
       end
     end
   end
+
+  describe "#clone" do
+    board : Board = Board.new
+    pawn = Pawn.new(PieceColor::Black)
+    pawn_at_coordinate = {'a', 8}
+
+    before_each do
+      board = Board.new
+      pawn = Pawn.new(PieceColor::Black)
+      board.add_piece(pawn_at_coordinate, pawn)
+    end
+
+    it "creates a Board with a copy of @structure" do
+      board.piece_at_coordinate(pawn_at_coordinate).should eq pawn
+
+      board_clone : Board = board.clone
+
+      # `board_clone` instance is not identical to the original `board` instance
+      board_clone.should_not be board
+
+      # `board_clone` structure is not strictly identical except in structure
+      board_clone.structure.should_not be board.structure
+      board_clone.structure.should eq board.structure
+
+      # `board_clone` structure row/rank is not strictly identical except in structure
+      board_clone.structure[0].should_not be board.structure[0]
+      board_clone.structure[0].should eq board.structure[0]
+    end
+
+    it "creates a new board structure but references the same original pieces instances" do
+      board.piece_at_coordinate(pawn_at_coordinate).should eq pawn
+      board_clone : Board = board.clone
+      board_clone.piece_at_coordinate(pawn_at_coordinate).should eq pawn
+    end
+  end
 end

@@ -182,7 +182,11 @@ class Board
   end
 
   def clone : Board
-    Board.new(@structure)
+    cloned_structure = @structure.map do |rank|
+      rank.dup
+    end
+
+    Board.new(cloned_structure)
   end
 
   private def is_valid_board_structure?(structure : BoardStructure) : Bool
