@@ -60,6 +60,18 @@ def convert_board_coordinate_to_array_matrix_coordinate(coordinate : BoardCoordi
   {rank, file_number}
 end
 
+def convert_array_matrix_coordinate_to_board_coordinate(array_matrix_coordinate = {row_index: Int32, column_index: Int32}) : BoardCoordinate
+  row_index = array_matrix_coordinate[0]
+  column_index = array_matrix_coordinate[1]
+  rank = 8 - row_index
+  file_number = column_index + 1
+  file_symbol = FileNumber.to_h.key_for(file_number)
+
+  raise "Unable to find a matching file for column index \"#{column_index}\"" if file_symbol.nil?
+
+  {file_symbol.to_s.char_at(0), rank}
+end
+
 def create_movement(from : BoardCoordinate, to : BoardCoordinate) : PieceMovement
   from_rank_number = from[1]
   from_file_number = FileNumber[from[0].to_s]

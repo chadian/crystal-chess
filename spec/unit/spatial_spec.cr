@@ -29,7 +29,7 @@ describe "#convert_board_coordinate_to_array_matrix_coordinate" do
   end
 end
 
-describe "create_movement" do
+describe "#create_movement" do
   describe "movements on prime axes" do
     it "creates a PieceMovement from two `BoardCoordinates` (north movement)" do
       (create_movement({'d', 1}, {'d', 8})).should eq({Direction::N, 7})
@@ -98,5 +98,27 @@ describe "create_movement" do
     it "creates a PieceMovement from two `BoardCoordinates` (north west, short)" do
       (create_movement({'d', 4}, {'b', 5})).should eq({Direction::NW, Jump::SHORT})
     end
+  end
+end
+
+describe "#convert_array_matrix_coordinate_to_board_coordinate" do
+  it "converts an ArrayMatrixCoordinate to a BoardCoordinate (bottom left coordinate)" do
+    board_coordinate = convert_array_matrix_coordinate_to_board_coordinate({7, 0})
+    board_coordinate.should eq({'a', 1})
+  end
+
+  it "converts an ArrayMatrixCoordinate to a BoardCoordinate (bottom right coordinate)" do
+    board_coordinate = convert_array_matrix_coordinate_to_board_coordinate({7, 7})
+    board_coordinate.should eq({'h', 1})
+  end
+
+  it "converts an ArrayMatrixCoordinate to a BoardCoordinate (top left coordinate)" do
+    board_coordinate = convert_array_matrix_coordinate_to_board_coordinate({0, 0})
+    board_coordinate.should eq({'a', 8})
+  end
+
+  it "converts an ArrayMatrixCoordinate to a BoardCoordinate (top right coordinate)" do
+    board_coordinate = convert_array_matrix_coordinate_to_board_coordinate({0, 7})
+    board_coordinate.should eq({'h', 8})
   end
 end
