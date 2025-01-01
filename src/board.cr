@@ -190,6 +190,59 @@ class Board
     Board.new(cloned_structure)
   end
 
+  def check?
+    checks.size > 0
+  end
+
+  def checks : Array(GameTrackedMove)
+    checks = [] of GameTrackedMove
+
+    white_king_coordinate : BoardCoordinate? = nil
+    black_king_coordinate : BoardCoordinate? = nil
+
+    @structure.each_index do |row_index|
+      rank = @structure[row_index]
+      rank.each_index do |column_index|
+        piece_or_nil = @structure[row_index][column_index]
+
+        if piece_or_nil.is_a? King && piece_or_nil.color == PieceColor::White
+          white_king_coordinate = convert_array_matrix_coordinate_to_board_coordinate({row_index, column_index})
+        elsif piece_or_nil.is_a? King && piece_or_nil.color == PieceColor::Black
+          black_king_coordinate = convert_array_matrix_coordinate_to_board_coordinate({row_index, column_index})
+        end
+      end
+    end
+
+    @structure.each_index do |row_index|
+      rank = @structure[row_index]
+      rank.each_index do |column_index|
+        piece_or_nil = @structure[row_index][column_index]
+
+        next if piece_or_nil.nil?
+        next if piece_or_nil.is_a? King
+
+        king_to_attack_coordinate : BoardCoordinate?
+        if piece_or_nil.color == PieceColor::White
+          king_to_attack_coordinate = black_king_coordinate
+        else
+          king_to_attack_coordinate = white_king_coordinate
+        end
+
+        next if king_to_attack_coordinate.nil?
+
+        piece_coordinate = convert_array_matrix_coordinate_to_board_coordinate({row_index, column_index})
+        check_move = create_movement(piece_coordinate, king_to_attack_coordinate)
+
+        is_check = !move_blocked?(piece_coordinate, king_to_attack_coordinate, {can_capture: true}) && piece_or_nil.capture_moves.includes? check_move
+        if is_check
+          checks.push({from: piece_coordinate, to: king_to_attack_coordinate})
+        end
+      end
+    end
+
+    checks
+  end
+
   private def valid_board_structure?(structure : BoardStructure) : Bool
     return false if structure.size != DEFAULT_BOARD_RANK_COUNT
 

@@ -320,4 +320,66 @@ describe "Board" do
       board_clone.piece_at_coordinate(pawn_at_coordinate).should eq pawn
     end
   end
+
+  describe "#checks, #check?" do
+    it "reports checks against a white king" do
+      board = Board.new
+      white_king = King.new(PieceColor::White)
+      black_rook = Rook.new(PieceColor::Black)
+      board.add_piece({'a', 1}, white_king)
+      board.add_piece({'a', 8}, black_rook)
+
+      board.checks.should eq([{from: {'a', 8}, to: {'a', 1}}])
+      board.check?.should eq true
+    end
+
+    it "reports checks against a black king" do
+      board = Board.new
+      black_king = King.new(PieceColor::White)
+      white_rook = Rook.new(PieceColor::Black)
+      board.add_piece({'a', 1}, black_king)
+      board.add_piece({'a', 8}, white_rook)
+
+      board.checks.should eq([{from: {'a', 8}, to: {'a', 1}}])
+      board.check?.should eq true
+    end
+
+    it "reports no checks when there are no kings on the board" do
+      board = Board.new
+      black_rook = Rook.new(PieceColor::White)
+      white_rook = Rook.new(PieceColor::Black)
+      board.add_piece({'a', 1}, black_rook)
+      board.add_piece({'a', 8}, white_rook)
+
+      board.checks.should eq([] of GameTrackedMove)
+      board.check?.should eq false
+    end
+
+    it "reports no checks when a possible check is blocked" do
+      board = Board.new
+      white_king = King.new(PieceColor::White)
+      white_pawn = Pawn.new(PieceColor::White)
+      black_rook = Rook.new(PieceColor::Black)
+
+      board.add_piece({'a', 1}, white_king)
+      board.add_piece({'a', 2}, white_pawn)
+      board.add_piece({'a', 8}, black_rook)
+
+      board.checks.should eq([] of GameTrackedMove)
+      board.check?.should eq false
+    end
+
+    it "should not consider a check if the move is not an attacking move" do
+      board = Board.new
+      # The black pawn can move forward but that is not an attacking move
+      black_pawn = Pawn.new(PieceColor::White)
+      white_king = King.new(PieceColor::White)
+
+      board.add_piece({'a', 2}, black_pawn)
+      board.add_piece({'a', 3}, white_king)
+
+      board.checks.should eq([] of GameTrackedMove)
+      board.check?.should eq false
+    end
+  end
 end
